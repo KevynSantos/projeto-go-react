@@ -1,12 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"net/http"
+)
 
-func main() {
-	saudacao := ola("Kevyn")
-	fmt.Println(saudacao)
+// Struct (equivalente a uma "entidade" em Java)
+type User struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
 }
 
-func ola(nome string) string {
-	return fmt.Sprintf("Olá, %s! Seja bem-vindo ao Go!", nome)
+// Função que retorna uma lista de usuários em JSON
+func getUsers(w http.ResponseWriter, r *http.Request) {
+	users := []User{
+		{ID: 1, Name: "Alice"},
+		{ID: 2, Name: "Bob"},
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(users)
+}
+
+func main() {
+	http.HandleFunc("/users", getUsers)
+	http.ListenAndServe(":8080", nil)
 }
